@@ -1,9 +1,12 @@
 import React from 'react';
+import { Forecast } from './components/Forecast';
+import { Header } from './components/Header';
 
 function App() {
   return (
-    <div className="App">
-      <p>App</p>
+    <div>
+      <Header />
+      <Forecast />
     </div>
   );
 }
