@@ -3,7 +3,7 @@ import { COORDINATES, HOURLY_FORECAST } from '../../api/endpoints';
 import axios from 'axios';
 
 const initialState = {
-  hourlyForecast: [],
+  currentForecast: {},
   cache: [],
   isLoading: false,
   error: null,
@@ -23,7 +23,7 @@ export const getForecast = createAsyncThunk(
         HOURLY_FORECAST(lat, lon)
       );
       if (forecastError) rejectWithValue(forecastError);
-      return forecast.hourly;
+      return { ...forecast, city };
     } catch (error) {
       rejectWithValue(error);
     }
@@ -33,6 +33,11 @@ export const getForecast = createAsyncThunk(
 export const forecastSlice = createSlice({
   name: 'forecast',
   initialState,
+  reducers: {
+    setForecastFromCache: (state, action) => {
+      state.currentForecast = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getForecast.pending, (state) => {
@@ -45,10 +50,12 @@ export const forecastSlice = createSlice({
       .addCase(getForecast.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        state.hourlyForecast = action.payload;
+        state.currentForecast = action.payload;
         state.cache = [...state.cache, action.payload];
       });
   },
 });
+
+export const { setForecastFromCache } = forecastSlice.actions;
 
 export default forecastSlice.reducer;
